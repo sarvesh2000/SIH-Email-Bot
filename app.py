@@ -1,3 +1,8 @@
+from parse_rest.core import ResourceRequestBadRequest, ParseError
+from parse_rest.connection import ParseBatcher
+from parse_rest.query import QueryResourceDoesNotExist
+from parse_rest.connection import register
+from parse_rest.datatypes import Function, Object, GeoPoint
 import os
 from flask import Flask, request
 import smtplib
@@ -9,11 +14,6 @@ app = Flask(__name__)
 # Parse Server Details
 os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
 
-from parse_rest.datatypes import Function, Object, GeoPoint
-from parse_rest.connection import register
-from parse_rest.query import QueryResourceDoesNotExist
-from parse_rest.connection import ParseBatcher
-from parse_rest.core import ResourceRequestBadRequest, ParseError
 
 APPLICATION_ID = 'Ts1A7Zvn3GBJGN62VyvYJEUiKEJwyIBSumxwiPRk'
 REST_API_KEY = 'mjbuzgxCofRDnSCUU7yovyKyKdkfSZr9KvJYqpgi'
@@ -26,26 +26,30 @@ register(APPLICATION_ID, REST_API_KEY, master_key=MASTER_KEY)
 EMAIL_ADDRESS = os.environ['EMAIL_ADDRESS']
 EMAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
 
+
 def sendEmail(result):
 	with smtplib.SMTP("smtp.gmail.com", 587)as smtp:
 		smtp.ehlo()
 		smtp.starttls()
 		smtp.ehlo()
 
-		smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
+		smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 
-		subject='Govt. of Sikkim | File Action Required'
-		body='Hey your file with file ID:'+result['result']['FileID'] +' is pending. Please start / finish the job quickly if not done already.'
-		msg= f'Subjext: {subject}\n\n{body}'
+		subject = 'Govt. of Sikkim | File Action Required'
+		body = 'Hey your file with file ID:' + \
+		    result['result']['FileID'] + \
+		        ' is pending. Please start / finish the job quickly if not done already.'
+		msg = f'Subject: {subject}\n\n{body}'
 
-		smtp.sendmail(EMAIL_ADDRESS,'sarvesh4232@gmail.com',msg)
+		smtp.sendmail(EMAIL_ADDRESS, 'sarvesh4232@gmail.com', msg)
 
-@app.route("/", methods=['POST','GET'])
+
+@app.route("/", methods=['POST', 'GET'])
 def index():
 	jobDeadline = Function("jobDeadline")
-    result= jobDeadline(status="created")
-    print(result)
-    sendEmail(result)
+	result= jobDeadline(status="created")
+	print(result)
+	sendEmail(result)
 
     result= jobDeadline(status="reassigned - created")
     print(result)
