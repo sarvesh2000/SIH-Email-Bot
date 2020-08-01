@@ -47,23 +47,23 @@ def sendEmail(result):
 @app.route("/", methods=['POST', 'GET'])
 def index():
 	jobDeadline = Function("jobDeadline")
-	result= jobDeadline(status="created")
+	result = jobDeadline(status="created")
 	print(result)
 	sendEmail(result)
-
-    result= jobDeadline(status="reassigned - created")
-    print(result)
-    sendEmail(result)
-
-    result= jobDeadline(status="pending")
-    print(result)
-    if(result['result']!="No Results Found"):
-        sendEmail(result)
-
-    result= jobDeadline(status="reassigned - pending")
-    print(result)
-    if(result['result']!="No Results Found"):
-        sendEmail(result)
+	
+	result= jobDeadline(status="reassigned - created")
+	print(result)
+	sendEmail(result)
+	
+	result= jobDeadline(status="pending")
+	print(result)
+	if(result['result']!="No Results Found"):
+		sendEmail(result)
+		
+	result= jobDeadline(status="reassigned - pending")
+	print(result)
+	if(result['result']!="No Results Found"):
+		sendEmail(result)
 	
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
